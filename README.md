@@ -24,8 +24,13 @@ To run the demo and reproduce results locally:
 
 ```bash
 pip install -r requirements.txt
-jupyter notebook notebooks/flyt_hub_clearance.ipynb
+pytest -v
 ```
+
+Then open the project in your IDE or run the visualisation:
+
+cd src
+python -c "from engine import evaluate_mission_clearance; print(evaluate_mission_clearance()['status'])"
 
 **Demonstration:**  
 The main notebook walks through a perimeter-scan mission and shows how it is **blocked** by a pre-scheduled cargo lane in the south corridor.
@@ -35,14 +40,13 @@ The main notebook walks through a perimeter-scan mission and shows how it is **b
 ## 🏗️ Repository Structure
 
 ```
-notebooks/                   <- Interactive notebook demo + test harness
-src/clearance/               <- Core clearance engine modules
-├── engine.py                <- Main API: evaluate_mission_clearance()
-├── geometry.py              <- 3D geometry & time-based distance utilities
-├── traffic.py               <- Scheduled drones & waypoints database
-└── constants.py             <- Safety radius and default parameters
-tests/                       <- Pytest suite verifying core logic
-requirements.txt             <- Dependency definitions
+src/ <- Core clearance engine modules
+├── engine.py <- Main API: evaluate_mission_clearance()
+├── geometry.py <- 3D geometry & time-based distance utilities
+├── scenario.py <- Waypoints, schedules & configuration
+├── visualize.py <- 3D trajectory plotting helpers
+└── test_engine.py <- Pytest suite verifying core logic
+requirements.txt <- Dependency definitions
 ```
 
 ---
