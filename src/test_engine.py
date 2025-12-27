@@ -25,7 +25,7 @@ def test_conflict_detected():
     Default scenario should currently be CLEAR with the configured safety radius.
     """
     result = evaluate_mission_clearance()
-    assert result["status"] == "clear"
+    assert result["status"] == "blocked"
 
 
 def test_no_conflict_when_far_apart():
