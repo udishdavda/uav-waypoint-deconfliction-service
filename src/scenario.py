@@ -58,10 +58,10 @@ def define_perimeter_scan_mission() -> Dict:
         "mission_id": "night_perimeter_scan_pune_hub_v1",
         "waypoints": [
             # SW -> SE -> NE -> NW (warehouse perimeter)
-            Waypoint(0,   0,  perimeter_alt,   0),   # SW
-            Waypoint(120, 0,  perimeter_alt,  60),   # SE
-            Waypoint(120, 80, perimeter_alt, 180),   # NE
-            Waypoint(0,   80, perimeter_alt, 300),   # NW
+            Waypoint(0,   -10, perimeter_alt,   0),   # SW (moved south)
+            Waypoint(120, -10, perimeter_alt,  60),   # SE (moved south)
+            Waypoint(120,  80, perimeter_alt, 180),   # NE
+            Waypoint(0,    80, perimeter_alt, 300),   # NW
         ],
         "t_start": 0,
         "t_end": 600,  # 10‑minute clearance window
