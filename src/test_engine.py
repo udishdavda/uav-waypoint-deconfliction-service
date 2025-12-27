@@ -1,13 +1,23 @@
-# === CELL 5: TEST HARNESS (NOTEBOOK VERSION) ===
+# === TEST SUITE: CLEARANCE ENGINE ===
 """
-Lightweight test harness for the clearance engine.
+Pytest-based test harness for the clearance engine.
 
-In the repo, these tests live in tests/test_engine.py and are run by
-pytest. Inside this notebook we keep a simple run_all_tests() wrapper
-so we can quickly verify behavior after making changes.
+Covers:
+- basic conflict detection against scheduled traffic
+- spatial separation in 3D (including altitude)
+- behavior at exactly the safety buffer
+- temporal non-overlap between missions
 """
 
 import math
+
+from scenario import Waypoint, CONFIG, define_perimeter_scan_mission
+from geometry import (
+    interpolate_trajectory_3d,
+    compute_min_separation,
+    SAFETY_RADIUS_M,
+)
+from engine import evaluate_mission_clearance
 
 
 def test_conflict_detected():
@@ -91,28 +101,3 @@ def test_no_conflict_when_no_time_overlap():
 
     result = evaluate_mission_clearance(shifted)
     assert result["status"] == "clear"
-
-
-def run_all_tests() -> None:
-    """
-    Execute all test_* functions and print a compact status line
-    for each. This mirrors a tiny subset of what pytest would do.
-    """
-    tests = [
-        ("conflict_detected", test_conflict_detected),
-        ("no_conflict_when_far_apart", test_no_conflict_when_far_apart),
-        ("3d_distance_uses_altitude", test_3d_distance_uses_altitude),
-        ("exact_safety_buffer_is_clear", test_exact_safety_buffer_is_clear),
-        ("no_conflict_when_no_time_overlap", test_no_conflict_when_no_time_overlap),
-    ]
-    for name, fn in tests:
-        try:
-            fn()
-            print(f"✅ {name} passed")
-        except AssertionError as e:
-            print(f"❌ {name} FAILED: {e}")
-
-
-# Run the tests once for this notebook
-run_all_tests()
-
