@@ -8,8 +8,14 @@ This plot is used in the demo video to show:
 - the overall qualitative risk level for the mission
 """
 
+from typing import Dict
+
 import matplotlib.pyplot as plt
 from mpl_toolkits.mplot3d import Axes3D  # noqa: F401 – required for 3D projection
+
+from scenario import define_scheduled_traffic
+from geometry import interpolate_trajectory_3d
+from engine import evaluate_mission_clearance
 
 
 def plot_3d_trajectories(result: Dict) -> None:
@@ -25,8 +31,12 @@ def plot_3d_trajectories(result: Dict) -> None:
     mission = result["mission"]
     traj_p, _ = interpolate_trajectory_3d(mission["waypoints"])
     ax.plot(
-        traj_p[:, 0], traj_p[:, 1], traj_p[:, 2],
-        color="blue", linewidth=3, label="Perimeter scan drone",
+        traj_p[:, 0],
+        traj_p[:, 1],
+        traj_p[:, 2],
+        color="blue",
+        linewidth=3,
+        label="Perimeter scan drone",
     )
 
     # --- Scheduled traffic around the hub -------------------------------------
@@ -34,8 +44,11 @@ def plot_3d_trajectories(result: Dict) -> None:
     for flight in define_scheduled_traffic():
         traj, _ = interpolate_trajectory_3d(flight["waypoints"])
         ax.plot(
-            traj[:, 0], traj[:, 1], traj[:, 2],
-            color=colors[flight["role"]], label=flight["id"],
+            traj[:, 0],
+            traj[:, 1],
+            traj[:, 2],
+            color=colors.get(flight["role"], "gray"),
+            label=flight["id"],
         )
 
     # --- Axes formatting and labels -------------------------------------------
@@ -48,6 +61,7 @@ def plot_3d_trajectories(result: Dict) -> None:
     plt.show()
 
 
-# Render once for the current decision
-plot_3d_trajectories(decision)
-
+if __name__ == "__main__":
+    # Example: evaluate default mission and visualize
+    decision = evaluate_mission_clearance()
+    plot_3d_trajectories(decision)
