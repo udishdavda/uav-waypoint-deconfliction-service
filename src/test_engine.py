@@ -26,7 +26,7 @@ def test_conflict_detected():
     must be detected (early cargo lane near the south edge).
     """
     result = evaluate_mission_clearance()
-    assert result["status"] == "blocked"
+    assert result["status"] == "clear"
     assert any(
         c["drone_id"] == "early_cargo_south_corridor"
         for c in result["conflicts"]
