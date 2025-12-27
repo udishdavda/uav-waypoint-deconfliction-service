@@ -3,7 +3,7 @@
 Defines the core data structures, configuration, and airspace scenario
 for a night-time perimeter scan around a smart logistics hub near Pune.
 
-This cell is intentionally domain-focused: no geometry or deconfliction
+This module is intentionally domain-focused: no geometry or deconfliction
 logic here, just the "world" the engine operates in.
 """
 
@@ -14,6 +14,7 @@ import numpy as np  # used later for trajectory generation, imported here once
 
 
 # --- Core data types ---------------------------------------------------------
+
 
 @dataclass
 class Waypoint:
@@ -33,8 +34,8 @@ class DeconflictionConfig:
     samples_per_segment: how densely to sample between waypoints when
                          constructing trajectories for distance checks.
     """
-    safety_radius_m: float = 50.0
-    samples_per_segment: int = 80
+    safety_radius_m: float = 25.0      # assignment safety radius (meters)
+    samples_per_segment: int = 10      # reasonable default for tests/demo
 
 
 # Single global config instance used by the rest of the code
@@ -42,6 +43,7 @@ CONFIG = DeconflictionConfig()
 
 
 # --- Primary mission: perimeter scan ----------------------------------------
+
 
 def define_perimeter_scan_mission() -> Dict:
     """
@@ -67,6 +69,7 @@ def define_perimeter_scan_mission() -> Dict:
 
 
 # --- Other scheduled traffic around the hub ---------------------------------
+
 
 def define_scheduled_traffic() -> List[Dict]:
     """
@@ -110,6 +113,6 @@ def define_scheduled_traffic() -> List[Dict]:
     ]
 
 
-print("Scenario: night perimeter scan around smart hub loaded.")
-print("Scheduled traffic drones:", len(define_scheduled_traffic()))
-
+if __name__ == "__main__":
+    print("Scenario: night perimeter scan around smart hub loaded.")
+    print("Scheduled traffic drones:", len(define_scheduled_traffic()))
