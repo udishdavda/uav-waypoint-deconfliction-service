@@ -9,9 +9,25 @@ qualitative risk level, and produces a human-readable summary.
 
 from typing import Any, Dict
 
+# Import scenario/config and geometry helpers
+from scenario import (
+    DeconflictionConfig,
+    CONFIG,
+    define_perimeter_scan_mission,
+    define_scheduled_traffic,
+)
+from geometry import (
+    interpolate_trajectory_3d,
+    compute_min_separation,
+)
 
-def time_windows_overlap(t1_start: float, t1_end: float,
-                         t2_start: float, t2_end: float) -> bool:
+
+def time_windows_overlap(
+    t1_start: float,
+    t1_end: float,
+    t2_start: float,
+    t2_end: float,
+) -> bool:
     """
     Return True if two mission time windows overlap in time.
 
@@ -63,8 +79,10 @@ def evaluate_mission_clearance(
     for flight in define_scheduled_traffic():
         # Skip flights whose time windows do not overlap with the mission.
         if not time_windows_overlap(
-            mission["t_start"], mission["t_end"],
-            flight["t_start"], flight["t_end"],
+            mission["t_start"],
+            mission["t_end"],
+            flight["t_start"],
+            flight["t_end"],
         ):
             continue
 
@@ -74,24 +92,27 @@ def evaluate_mission_clearance(
 
         # Record a conflict only when we actually violate the safety radius.
         if separation < config.safety_radius_m:
-            conflicts.append({
-                "drone_id": flight["id"],
-                "role": flight["role"],
-                "min_separation_m": round(separation, 1),
-                "overlap_window_s": (
-                    max(mission["t_start"], flight["t_start"]),
-                    min(mission["t_end"],  flight["t_end"]),
-                ),
-            })
+            conflicts.append(
+                {
+                    "drone_id": flight["id"],
+                    "role": flight["role"],
+                    "min_separation_m": round(separation, 1),
+                    "overlap_window_s": (
+                        max(mission["t_start"], flight["t_start"]),
+                        min(mission["t_end"], flight["t_end"]),
+                    ),
+                }
+            )
 
     status = "clear" if not conflicts else "blocked"
     risk_level = classify_risk_level(worst_separation, config.safety_radius_m)
 
     return {
         "status": status,
-        "risk_level": risk_level,   # extra feature beyond spec
-        "worst_separation_m": None if worst_separation == float("inf")
-                              else round(worst_separation, 1),
+        "risk_level": risk_level,  # extra feature beyond spec
+        "worst_separation_m": (
+            None if worst_separation == float("inf") else round(worst_separation, 1)
+        ),
         "conflicts": conflicts,
         "mission": mission,
         "config": config,
@@ -124,6 +145,6 @@ def summarize_clearance(result: Dict) -> str:
 
 
 # Run once and print summary for the default mission
-decision = evaluate_mission_clearance()
-print(summarize_clearance(decision))
-
+if __name__ == "__main__":
+    decision = evaluate_mission_clearance()
+    print(summarize_clearance(decision))
