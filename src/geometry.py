@@ -4,6 +4,12 @@ Geometry helpers for building 3D trajectories and measuring separation
 between drones in shared airspace.
 """
 
+from typing import List
+
+import numpy as np
+
+from scenario import Waypoint, CONFIG, define_perimeter_scan_mission, define_scheduled_traffic
+
 # Short alias so we do not have to reach into CONFIG everywhere.
 SAFETY_RADIUS_M = CONFIG.safety_radius_m
 
@@ -56,10 +62,12 @@ def compute_min_separation(traj1: np.ndarray, traj2: np.ndarray) -> float:
 
 
 # Quick geometry sanity check on the current scenario
-mission = define_perimeter_scan_mission()
-traffic0 = define_scheduled_traffic()[0]
-traj_m, _ = interpolate_trajectory_3d(mission["waypoints"])
-traj_t, _ = interpolate_trajectory_3d(traffic0["waypoints"])
-print("Example separation to early cargo:",
-      f"{compute_min_separation(traj_m, traj_t):.1f} m")
-
+if __name__ == "__main__":
+    mission = define_perimeter_scan_mission()
+    traffic0 = define_scheduled_traffic()[0]
+    traj_m, _ = interpolate_trajectory_3d(mission["waypoints"])
+    traj_t, _ = interpolate_trajectory_3d(traffic0["waypoints"])
+    print(
+        "Example separation to early cargo:",
+        f"{compute_min_separation(traj_m, traj_t):.1f} m",
+    )
